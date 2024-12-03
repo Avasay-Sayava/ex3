@@ -83,56 +83,73 @@ int indexOfMax(int arr[], int size);
 int indexOfMin(int arr[], int size);
 
 int main() {
+    // declare a 3D array to store sales data for each day, brand, and car type
     int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES];
+    // declare an array to track the number of days of data for each brand
     int days[NUM_OF_BRANDS] = {};
+    // declare a variable to store the user's choice from the menu
     int choice;
 
+    // initialize the cube array with empty cell values
     initValues(cube);
 
+    // loop indefinitely until the user chooses to exit
     while (true) {
+        // print the menu options
         printMenu();
+        // read the user's choice
         scanf(" %d", &choice);
 
+        // switch-case block to handle different user choices
         switch (choice) {
             case ADD_ONE: // scan and add sales data for a single brand
                 scanBrand(cube, days);
                 break;
-            case ADD_ALL: {
-                int brandCount = NUM_OF_BRANDS;
+            case ADD_ALL: { // scan and add sales data for all brands
+                int brandCount = NUM_OF_BRANDS; // remaining brands counter
                 bool remainingBrands[NUM_OF_BRANDS];
-                for (int i = 0; i < NUM_OF_BRANDS; ++i)
+                // initialize all brands as enabled
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
                     remainingBrands[i] = true;
+                // loop until all brands have been processed
                 while (brandCount) {
+                    // print a message indicating which brands still need data
                     printf("No data for brands");
-                    for (int i = 0; i < NUM_OF_BRANDS; ++i)
+                    for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
                         if (remainingBrands[i])
                             printf(" %s", brands[i]);
                     printf(".\n"
                            "Please complete the data.\n");
+                    // scan and add sales data for enabled brands, decreasing the brand count for each successful scan
                     brandCount -= scanEnabledBrands(cube, days, remainingBrands);
                 }
                 break;
             }
-            case STATS: {
+            case STATS: { // print the stats of a specific day
                 int day;
+                // prompt the user to enter a valid day
                 printf("What day would you like to analyze?\n");
                 scanf(" %d", &day);
 
+                // validate the input day
                 while (day > 365 || day < 1 || days[indexOfMin(days, DAYS_IN_YEAR)] < day) {
-                    printf("Please enter first valid day.\n"
+                    printf("Please enter a valid day.\n"
                            "What day would you like to analyze?\n");
                     scanf(" %d", &day);
                 }
 
+                // declare variables to store total sales, brand sales, and type sales
                 int salesSum = 0, brandSales[NUM_OF_BRANDS] = {}, typeSales[NUM_OF_TYPES] = {};
-                for (int i = 0; i < NUM_OF_BRANDS; ++i) {
-                    for (int j = 0; j < NUM_OF_TYPES; ++j) {
+                // calculate total sales, brand sales, and type sales for the specified day
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) { // iterate over each brand
+                    for (int j = 0; j < NUM_OF_TYPES; ++j) { // iterate over each car type for the brand
                         salesSum += cube[day - 1][i][j];
                         brandSales[i] += cube[day - 1][i][j];
                         typeSales[j] += cube[day - 1][i][j];
                     }
                 }
 
+                // print the calculated statistics
                 printf("In day number %d:\n"
                        "The sales total was %d\n"
                        "The best sold brand with %d sales was %s\n"
@@ -145,26 +162,28 @@ int main() {
 
                 break;
             }
-            case PRINT: {
-                printf("*****************************************\n\n");
-                for (int i = 0; i < NUM_OF_BRANDS; ++i) {
+            case PRINT: { // print all the data
+                printf("*****************************************\n\n"); // header
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) { // iterate over each brand
                     printf("Sales for %s:\n", brands[i]);
-                    for (int j = 0; j < days[i]; ++j) {
+                    for (int j = 0; j < days[i]; ++j) { // iterate over each day for the brand
                         printf("Day %d-", j + 1);
-                        for (int k = 0; k < NUM_OF_TYPES; ++k)
-                            printf(" %s: %d", types[k], cube[j][i][k]);
+                        for (int k = 0; k < NUM_OF_TYPES; ++k) // iterate over each car type for the day and brand
+                            printf(" %s: %d", types[k], cube[j][i][k]); // print brand's day's type data
                         printf("\n");
                     }
                 }
-                printf("\n\n*****************************************\n");
+                printf("\n\n*****************************************\n"); // footer
 
                 break;
             }
-            case INSIGHTS: {
+            case INSIGHTS: { // print the best-selling {x} overall
+                // declare arrays to store total sales for each brand, type, and day
                 int brandSales[NUM_OF_BRANDS] = {}, typeSales[NUM_OF_TYPES] = {}, daySales[DAYS_IN_YEAR] = {};
-                for (int i = 0; i < NUM_OF_BRANDS; ++i) {
-                    for (int j = 0; j < days[i]; ++j) {
-                        for (int k = 0; k < NUM_OF_TYPES; ++k) {
+                // calculate total sales for each brand, type, and day
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) { // iterate over each brand
+                    for (int j = 0; j < days[i]; ++j) { // iterate over each day for the brand
+                        for (int k = 0; k < NUM_OF_TYPES; ++k) { // iterate over each car type for the day and brand
                             brandSales[i] += cube[j][i][k];
                             typeSales[k] += cube[j][i][k];
                             daySales[j] += cube[j][i][k];
@@ -172,6 +191,7 @@ int main() {
                     }
                 }
 
+                // print overall insights
                 printf("The best-selling brand overall is %s: %d$\n"
                        "The best-selling type of car is %s: %d$\n"
                        "The most profitable day was day number %d: %d$\n",
@@ -184,34 +204,34 @@ int main() {
 
                 break;
             }
-            case DELTAS: {
-                int brandSales[NUM_OF_BRANDS][DAYS_IN_YEAR] = {};
+            case DELTAS: { // print the average deltas for each brand
+                // declare arrays to store daily sales for each brand and daily deltas for ach brand
+                 int brandSales[NUM_OF_BRANDS][DAYS_IN_YEAR] = {};
                 int brandDeltas[NUM_OF_BRANDS] = {};
-                for (int i = 0; i < NUM_OF_BRANDS; ++i) {
-                    for (int j = 0; j < days[i]; ++j) {
-                        for (int k = 0; k < NUM_OF_TYPES; ++k) {
+                // calculate daily sales for each brand
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
+                    for (int j = 0; j < days[i]; ++j) // iterate over each day for the brand
+                        for (int k = 0; k < NUM_OF_TYPES; ++k) // iterate over each car type for the day and brand
                             brandSales[i][j] += cube[j][i][k];
-                        }
-                    }
-                }
 
-                for (int i = 0; i < NUM_OF_BRANDS; ++i) {
-                    for (int j = 1; j < days[i]; ++j) {
+                // calculate daily deltas for each brand
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
+                    for (int j = 1; j < days[i]; ++j) // iterate over each day for the brand
                         brandDeltas[i] += brandSales[i][j] - brandSales[i][j - 1];
-                    }
-                }
 
-                for (int i = 0; i < NUM_OF_BRANDS; ++i) {
+                // print average deltas for each brand
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
                     printf("Brand: %s, Average Delta: %f\n",
                            brands[i], (double) brandDeltas[i] / (days[i] - 1));
-                }
 
                 break;
             }
             case DONE:
+                // Print a goodbye message and exit the program
                 printf("Goodbye!\n");
                 return 0;
             default:
+                // Print an error message for invalid input
                 printf("Invalid input\n");
         }
     }
@@ -236,9 +256,9 @@ void printMenu() {
  * @param cube the 3d-array that we want to initialize
  */
 void initValues(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES]) {
-    for (int i = 0; i < DAYS_IN_YEAR; ++i)
-        for (int j = 0; j < NUM_OF_BRANDS; ++j)
-            for (int k = 0; k < NUM_OF_TYPES; ++k)
+    for (int i = 0; i < DAYS_IN_YEAR; ++i) // iterate over each day in the year
+        for (int j = 0; j < NUM_OF_BRANDS; ++j) // iterate over each brand
+            for (int k = 0; k < NUM_OF_TYPES; ++k) // iterate over each car type for the day and brand
                 cube[i][j][k] = EMPTY_CELL;
 }
 
@@ -267,15 +287,15 @@ void setSales(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int day, int 
  */
 void scanBrand(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int days[NUM_OF_BRANDS]) {
     int brand, suvSales, sedanSales, coupeSales, gtSales;
-    scanf(" %d %d %d %d %d", &brand, &suvSales, &sedanSales, &coupeSales, &gtSales);
+    scanf(" %d %d %d %d %d", &brand, &suvSales, &sedanSales, &coupeSales, &gtSales); // get sales input
 
-    if (brand >= NUM_OF_BRANDS || brand < 0) {
+    if (brand >= NUM_OF_BRANDS || brand < 0) { // validate the input
         printf("This brand is not valid\n");
     } else {
-        setSales(cube, days[brand], brand,
+        setSales(cube, days[brand], brand, // set sales according to the inputs
                  suvSales, sedanSales, coupeSales, gtSales);
 
-        days[brand]++;
+        days[brand]++; // update the day
     }
 }
 
@@ -289,16 +309,16 @@ void scanBrand(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES], int days[NUM
 bool scanEnabledBrands(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES],
                        int days[NUM_OF_BRANDS], bool enabled[NUM_OF_BRANDS]) {
     int brand, suvSales, sedanSales, coupeSales, gtSales;
-    scanf(" %d %d %d %d %d", &brand, &suvSales, &sedanSales, &coupeSales, &gtSales);
+    scanf(" %d %d %d %d %d", &brand, &suvSales, &sedanSales, &coupeSales, &gtSales); // get sales input
 
-    if (brand >= NUM_OF_BRANDS || brand < 0 || !enabled[brand]) {
+    if (brand >= NUM_OF_BRANDS || brand < 0 || !enabled[brand]) { // validate the input
         printf("This brand is not valid\n");
         return false;
     } else {
-        setSales(cube, days[brand], brand,
+        setSales(cube, days[brand], brand, // set sales according to the inputs
                  suvSales, sedanSales, coupeSales, gtSales);
-        enabled[brand] = false;
-        days[brand]++;
+        enabled[brand] = false; // disable another input for the same brand in this day
+        days[brand]++; // update the day
         return true;
     }
 }
