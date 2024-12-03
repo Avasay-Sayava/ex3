@@ -118,8 +118,8 @@ int main() {
                     for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
                         if (remainingBrands[i])
                             printf(" %s", brands[i]);
-                    printf(".\n"
-                           "Please complete the data.\n");
+                    printf("\n"
+                           "Please complete the data\n");
                     // scan and add sales data for enabled brands, decreasing the brand count for each successful scan
                     brandCount -= scanEnabledBrands(cube, days, remainingBrands);
                 }
@@ -132,7 +132,7 @@ int main() {
                 scanf(" %d", &day);
 
                 // validate the input day
-                while (day > 365 || day < 1 || days[indexOfMin(days, DAYS_IN_YEAR)] < day) {
+                while (day > DAYS_IN_YEAR || day < 1 || days[indexOfMax(days, NUM_OF_BRANDS)] < day) {
                     printf("Please enter a valid day.\n"
                            "What day would you like to analyze?\n");
                     scanf(" %d", &day);
