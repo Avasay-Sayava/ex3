@@ -6,32 +6,33 @@ Assignment: ex3
 
 #include <stdio.h>
 
-/*
- * it was very fun to write this hehe
- *
- * To whomever this concerns.
- * Whilst I have had many problems with the homework instructions, what I have come to realize is truly unacceptable.
- * I, an innocent programmer, was reading the instructions of an exercise,
- * when suddenly I saw that one can not use a library but <stdio.h>!
- * I burst into tear; (>_<) "I can not use the [bool] type!", said I, distraught.
- * Why hath this fate befallen me? For the bool type hath been taught to us,
- * so why should we not use it?
- * But alas! The word "bool" is defined verily in <stdbool.h>!
- * Do you now see the problem here inlies? Hark, for <stdbool.h> is not of <stdio.h>!
- * So why should we not use [_Bool], defined in C itself? We know in <stdbool.h>, [bool] is merely provided as:
- * ```c
- * #define bool         _Bool
- * ```
- * But here yet hides a tricky trap, for this, we have not yet learned!
- * What we have not learned we may not use; truly, woe is us.
- * This failing befuddles me, so in this work I do use [_Bool], defining it just as in <stdbool.h>.
- * In addition, the {true, false} values have thus been defined similarly.
- * I thank you for your consideration, dear respected faculty.
+/**
+ * it was very fun to write this hehe                                                           <br>
+ *                                                                                              <br>
+ * To whomever this concerns.                                                                   <br>
+ * Whilst I have had many problems with the homework instructions,                              <br>
+ * what I have come to realize is truly unacceptable.                                           <br>
+ * I, an innocent programmer, was reading the instructions of an exercise,                      <br>
+ * when suddenly I saw that one can not use a library but \<stdio.h\>!                          <br>
+ * I burst into tear; (>_<) "I can not use the [bool] type!", said I, distraught.               <br>
+ * Why hath this fate befallen me? For the bool type hath been taught to us,                    <br>
+ * so why should we not use it?                                                                 <br>
+ * But alas! The word "bool" is defined verily in \<stdbool.h\>!                                <br>
+ * Do you now see the problem here inlies?                                                      <br>
+ * Hark, for \<stdbool.h\> is not of \<stdio.h\>!                                               <br>
+ * So why should we not use [_Bool], defined in C itself?                                       <br>
+ * We know in \<stdbool.h\>, [bool] is merely provided as:                                      <br>
+ * <code>                                                                                       <br>
+ * #define bool         _Bool                                                                   <br>
+ * </code>                                                                                      <br>
+ * But here yet hides a tricky trap, for this, we have not yet learned!                         <br>
+ * What we have not learned we may not use; truly, woe is us.                                   <br>
+ * I thank you for your consideration, dear respected faculty.                                  <br>
  */
 
-#define bool            _Bool
-#define true            1
-#define false           0
+#define bool            char    // the smallest datatype that we had learnt and is not bool
+#define true            1       // like in <stdbool.h>
+#define false           0       // like in <stdbool.h>
 
 // define constants for array sizes and other values
 #define NUM_OF_BRANDS   5
@@ -81,6 +82,7 @@ bool scanEnabledBrands(int cube[DAYS_IN_YEAR][NUM_OF_BRANDS][NUM_OF_TYPES],
                        int days[NUM_OF_BRANDS], bool enabled[NUM_OF_BRANDS]);
 int indexOfMax(int arr[], int size);
 int indexOfMin(int arr[], int size);
+void printString(char str[]);
 
 int main() {
     // declare a 3D array to store sales data for each day, brand, and car type
@@ -115,9 +117,12 @@ int main() {
                 while (brandCount) {
                     // print a message indicating which brands still need data
                     printf("No data for brands");
-                    for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
-                        if (remainingBrands[i])
-                            printf(" %s", brands[i]);
+                    for (int i = 0; i < NUM_OF_BRANDS; ++i) { // iterate over each brand
+                        if (remainingBrands[i]) {
+                            printf(" ");
+                            printString(brands[i]); // (>_<)
+                        }
+                    }
                     printf("\n"
                            "Please complete the data\n");
                     // scan and add sales data for enabled brands, decreasing the brand count for each successful scan
@@ -132,7 +137,7 @@ int main() {
                 scanf(" %d", &day);
 
                 // validate the input day
-                while (day > DAYS_IN_YEAR || day < 1 || days[indexOfMax(days, NUM_OF_BRANDS)] < day) {
+                while (day > DAYS_IN_YEAR || day < 1 || days[indexOfMin(days, NUM_OF_BRANDS)] < day) {
                     printf("Please enter a valid day.\n"
                            "What day would you like to analyze?\n");
                     scanf(" %d", &day);
@@ -152,24 +157,31 @@ int main() {
                 // print the calculated statistics
                 printf("In day number %d:\n"
                        "The sales total was %d\n"
-                       "The best sold brand with %d sales was %s\n"
-                       "The best sold type with %d sales was %s\n\n",
-                       day, salesSum,
-                       brandSales[indexOfMax(brandSales, NUM_OF_BRANDS)],
-                       brands[indexOfMax(brandSales, NUM_OF_BRANDS)],
-                       typeSales[indexOfMax(typeSales, NUM_OF_TYPES)],
-                       types[indexOfMax(typeSales, NUM_OF_TYPES)]);
+                       "The best sold brand with %d sales was ",
+                       day, salesSum, brandSales[indexOfMax(brandSales, NUM_OF_BRANDS)]);
+                printString(brands[indexOfMax(brandSales, NUM_OF_BRANDS)]); // (>_<)
+                printf("\n"
+                       "The best sold type with %d sales was ",
+                       typeSales[indexOfMax(typeSales, NUM_OF_TYPES)]);
+                printString(types[indexOfMax(typeSales, NUM_OF_TYPES)]); // (>_<)
+                printf("\n\n");
 
                 break;
             }
             case PRINT: { // print all the data
                 printf("*****************************************\n\n"); // header
                 for (int i = 0; i < NUM_OF_BRANDS; ++i) { // iterate over each brand
-                    printf("Sales for %s:\n", brands[i]);
+                    printf("Sales for ");
+                    printString(brands[i]); // (>_<)
+                    printf(":\n");
                     for (int j = 0; j < days[i]; ++j) { // iterate over each day for the brand
                         printf("Day %d-", j + 1);
-                        for (int k = 0; k < NUM_OF_TYPES; ++k) // iterate over each car type for the day and brand
-                            printf(" %s: %d", types[k], cube[j][i][k]); // print brand's day's type data
+                        for (int k = 0; k < NUM_OF_TYPES; ++k) { // iterate over each car type for the day and brand
+                            // print brand's day's type data
+                            printf(" ");
+                            printString(types[k]); // (>_<)
+                            printf(": %d", cube[j][i][k]);
+                        }
                         printf("\n");
                     }
                 }
@@ -192,12 +204,14 @@ int main() {
                 }
 
                 // print overall insights
-                printf("The best-selling brand overall is %s: %d$\n"
-                       "The best-selling type of car is %s: %d$\n"
+                printf("The best-selling brand overall is ");
+                printString(brands[indexOfMax(brandSales, NUM_OF_BRANDS)]); // (>_<)
+                printf(": %d$\n"
+                       "The best-selling type of car is ",
+                       brandSales[indexOfMax(brandSales, NUM_OF_BRANDS)]);
+                printString(types[indexOfMax(typeSales, NUM_OF_TYPES)]); // (>_<)
+                printf(": %d$\n"
                        "The most profitable day was day number %d: %d$\n",
-                       brands[indexOfMax(brandSales, NUM_OF_BRANDS)],
-                       brandSales[indexOfMax(brandSales, NUM_OF_BRANDS)],
-                       types[indexOfMax(typeSales, NUM_OF_TYPES)],
                        typeSales[indexOfMax(typeSales, NUM_OF_TYPES)],
                        indexOfMax(daySales, DAYS_IN_YEAR) + 1,
                        daySales[indexOfMax(daySales, DAYS_IN_YEAR)]);
@@ -206,7 +220,7 @@ int main() {
             }
             case DELTAS: { // print the average deltas for each brand
                 // declare arrays to store daily sales for each brand and daily deltas for ach brand
-                 int brandSales[NUM_OF_BRANDS][DAYS_IN_YEAR] = {};
+                int brandSales[NUM_OF_BRANDS][DAYS_IN_YEAR] = {};
                 int brandDeltas[NUM_OF_BRANDS] = {};
                 // calculate daily sales for each brand
                 for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
@@ -220,9 +234,13 @@ int main() {
                         brandDeltas[i] += brandSales[i][j] - brandSales[i][j - 1];
 
                 // print average deltas for each brand
-                for (int i = 0; i < NUM_OF_BRANDS; ++i) // iterate over each brand
-                    printf("Brand: %s, Average Delta: %f\n",
-                           brands[i], (double) brandDeltas[i] / (days[i] - 1));
+                for (int i = 0; i < NUM_OF_BRANDS; ++i) { // iterate over each brand
+                    // print the average delta
+                    printf("Brand: ");
+                    printString(brands[i]); // (>_<)
+                    printf(", Average Delta: %f\n",
+                           (double) brandDeltas[i] / (days[i] - 1));
+                }
 
                 break;
             }
@@ -349,4 +367,29 @@ int indexOfMin(int arr[], int size) {
         if (arr[index] > arr[i])
             index = i;
     return index;
+}
+
+/**
+ * A task so simple, yet a trial so dire,       <br>
+ * To print a string, a humble desire.          <br>
+ * No %s to aid, no format specifier,           <br>
+ * A cruel decree, programmer's mare.           <br>
+ *                                              <br>
+ * A for loop's toil, a %c's plight,            <br>
+ * A character by character, a dismal sight.    <br>
+ * No smickery, no hield, no ofold art,         <br>
+ * A tintrey soul, a broken heart.              <br>
+ *                                              <br>
+ * Oh, cruel fate, set us in restrain,          <br>
+ * To shackle our code, to cause such pain.     <br>
+ * A simpler time, a bygone era,                <br>
+ * When %s was mightened, and coding was fair.  <br>
+ *                                              <br>
+ * prints the string provided char by char (>_<).
+ * @param str the provided string
+ */
+void printString(char str[]) {
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printf("%c", str[i]);
+    }
 }
